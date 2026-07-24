@@ -48,7 +48,7 @@ class ProductsScreen extends StatelessWidget {
                           children: [
                             Text(['Arroz Blanco', 'Azúcar Refinada', 'Maíz Amarillo', 'Frijol Negro'][i], style: Theme.of(context).textTheme.labelLarge),
                             const SizedBox(height: 4),
-                            Text(['$450 USD/Ton • Vietnam', '$380 USD/Ton • Brasil', '$320 USD/Ton • USA', '$550 USD/Ton • Uganda'][i], style: Theme.of(context).textTheme.bodyMedium),
+                            Text(['\$450 USD/Ton • Vietnam', '\$380 USD/Ton • Brasil', '\$320 USD/Ton • USA', '\$550 USD/Ton • Uganda'][i], style: Theme.of(context).textTheme.bodyMedium),
                             const SizedBox(height: 8),
                             Chip(
                               label: Text('Disponible', style: const TextStyle(fontSize: 11, color: Colors.white)),

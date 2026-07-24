@@ -18,7 +18,7 @@ class ConversationDetailScreen extends StatelessWidget {
                 _MessageBubble(isUser: true, text: 'Hola, ¿tienen disponibilidad de arroz?', time: '10:30'),
                 _MessageBubble(isUser: false, text: '¡Hola! Sí, tenemos arroz de alta calidad disponible. Contamos con variedad de origen vietnamita y tailandés. ¿Qué cantidad necesita?', time: '10:31'),
                 _MessageBubble(isUser: true, text: 'Necesito 20 toneladas para entrega en Guatemala.', time: '10:32'),
-                _MessageBubble(isUser: false, text: 'Excelente. Tenemos disponibilidad para esa cantidad. El precio por tonelada es de $450 USD FOB. ¿Le interesaría recibir una cotización formal?', time: '10:33'),
+                _MessageBubble(isUser: false, text: 'Excelente. Tenemos disponibilidad para esa cantidad. El precio por tonelada es de \$450 USD FOB. ¿Le interesaría recibir una cotización formal?', time: '10:33'),
               ],
             ),
           ),

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/screens/login_screen.dart';
@@ -20,7 +19,7 @@ import '../../features/settings/screens/settings_screen.dart';
 import '../providers/auth_provider.dart';
 
 class AppRouter {
-  static GoRouter createRouter(Ref ref) {
+  static GoRouter createRouter(WidgetRef ref) {
     final authState = ref.watch(authProvider);
     return GoRouter(
       initialLocation: '/splash',

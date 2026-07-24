@@ -15,9 +15,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   final _screens = [
     const _DashboardContent(),
-    const _ConversationsList(),
-    const _CustomersList(),
-    const _SettingsView(),
+    _ConversationsList(),
+    _CustomersList(),
+    _SettingsView(),
   ];
 
   @override
