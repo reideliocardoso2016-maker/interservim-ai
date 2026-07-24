@@ -1,0 +1,116 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/backend/api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run backend tests
+        run: |
+          python -c "
+          from app.core.config import settings
+          from app.core.enums import *
+          from app.models import *
+          from app.schemas.schemas import *
+          print('All backend modules imported successfully')
+          "
+
+      - name: Seed database
+        run: |
+          DATABASE_URL=sqlite:///./test.db python seed.py
+
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile/flutter_app
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run Flutter analyze
+        run: flutter analyze
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: interservim-ai-release-apk
+          path: apps/mobile/flutter_app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+  build-appbundle:
+    name: Build Android App Bundle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile/flutter_app
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build App Bundle
+        run: flutter build appbundle --release
+
+      - name: Upload App Bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: interservim-ai-release-aab
+          path: apps/mobile/flutter_app/build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30

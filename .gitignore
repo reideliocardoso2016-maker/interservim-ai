@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+venv/
+.env
+
+# Flutter/Dart
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.dart_tool/
+build/
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Docker
+.docker/
+
+# Uploads
+uploads/
+
+# Secrets
+.env
+*.key
+*.pem
