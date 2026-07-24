@@ -64,6 +64,13 @@ jobs:
           channel: "stable"
           cache: true
 
+      - name: Regenerate Android platform files
+        run: |
+          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web /tmp/flutter_temp
+          rm -rf android/ web/
+          rsync -a /tmp/flutter_temp/android/ android/
+          rsync -a /tmp/flutter_temp/web/ web/ 2>/dev/null || true
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -101,6 +108,13 @@ jobs:
         with:
           channel: "stable"
           cache: true
+
+      - name: Regenerate Android platform files
+        run: |
+          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web /tmp/flutter_temp
+          rm -rf android/ web/
+          rsync -a /tmp/flutter_temp/android/ android/
+          rsync -a /tmp/flutter_temp/web/ web/ 2>/dev/null || true
 
       - name: Install dependencies
         run: flutter pub get
