@@ -70,6 +70,14 @@ jobs:
           rm -rf android/ web/
           cp -r /tmp/flutter_temp/android android/
           cp -r /tmp/flutter_temp/web web/ 2>/dev/null || true
+          # Enable core library desugaring for flutter_local_notifications
+          sed -i 's/targetCompatibility = JavaVersion.VERSION_1_8/&\n        isCoreLibraryDesugaringEnabled = true/' android/app/build.gradle
+          cat >> android/app/build.gradle << 'EOF'
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+}
+EOF
 
       - name: Install dependencies
         run: flutter pub get
@@ -115,6 +123,14 @@ jobs:
           rm -rf android/ web/
           cp -r /tmp/flutter_temp/android android/
           cp -r /tmp/flutter_temp/web web/ 2>/dev/null || true
+          # Enable core library desugaring for flutter_local_notifications
+          sed -i 's/targetCompatibility = JavaVersion.VERSION_1_8/&\n        isCoreLibraryDesugaringEnabled = true/' android/app/build.gradle
+          cat >> android/app/build.gradle << 'EOF'
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+}
+EOF
 
       - name: Install dependencies
         run: flutter pub get
