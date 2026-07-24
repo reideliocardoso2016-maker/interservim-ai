@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../services/api_service.dart';
+import '../../shared/services/api_service.dart';
 
 class AuthState {
   final bool isAuthenticated;

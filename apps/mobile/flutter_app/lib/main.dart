@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'app/config/app_config.dart';
 import 'app/theme/app_theme.dart';
 import 'app/routes/app_router.dart';

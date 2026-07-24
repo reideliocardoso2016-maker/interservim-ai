@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../config/app_config.dart';
+import '../../app/config/app_config.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
