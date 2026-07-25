@@ -70,19 +70,51 @@ jobs:
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           # Remove generated test that references non-existent MyApp
           rm -f test/widget_test.dart
-          # Enable core library desugaring for flutter_local_notifications
-          python3 -c "
-import re
-with open('android/app/build.gradle.kts', 'r') as f:
-    content = f.read()
-content = content.replace(
-    'targetCompatibility = JavaVersion.VERSION_11',
-    'targetCompatibility = JavaVersion.VERSION_11\n        isCoreLibraryDesugaringEnabled = true'
-)
-content += '\ndependencies {\n    coreLibraryDesugaring(\"com.android.tools:desugar_jdk_libs:2.1.4\")\n}\n'
-with open('android/app/build.gradle.kts', 'w') as f:
-    f.write(content)
-"
+          # Overwrite build.gradle.kts with desugaring already included
+          cat > android/app/build.gradle.kts << 'BUILDGRADLE'
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("dev.flutter.flutter-gradle-plugin")
+}
+
+android {
+    namespace = "com.interservim.interservim_ai_sales_agent"
+    compileSdk = flutter.compileSdkVersion
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
+
+    defaultConfig {
+        applicationId = "com.interservim.interservim_ai_sales_agent"
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.debug
+        }
+    }
+}
+
+flutter {
+    source = ".."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+}
+BUILDGRADLE
 
       - name: Install dependencies
         run: flutter pub get
@@ -128,19 +160,51 @@ with open('android/app/build.gradle.kts', 'w') as f:
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           # Remove generated test that references non-existent MyApp
           rm -f test/widget_test.dart
-          # Enable core library desugaring for flutter_local_notifications
-          python3 -c "
-import re
-with open('android/app/build.gradle.kts', 'r') as f:
-    content = f.read()
-content = content.replace(
-    'targetCompatibility = JavaVersion.VERSION_11',
-    'targetCompatibility = JavaVersion.VERSION_11\n        isCoreLibraryDesugaringEnabled = true'
-)
-content += '\ndependencies {\n    coreLibraryDesugaring(\"com.android.tools:desugar_jdk_libs:2.1.4\")\n}\n'
-with open('android/app/build.gradle.kts', 'w') as f:
-    f.write(content)
-"
+          # Overwrite build.gradle.kts with desugaring already included
+          cat > android/app/build.gradle.kts << 'BUILDGRADLE'
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("dev.flutter.flutter-gradle-plugin")
+}
+
+android {
+    namespace = "com.interservim.interservim_ai_sales_agent"
+    compileSdk = flutter.compileSdkVersion
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
+
+    defaultConfig {
+        applicationId = "com.interservim.interservim_ai_sales_agent"
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.debug
+        }
+    }
+}
+
+flutter {
+    source = ".."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+}
+BUILDGRADLE
 
       - name: Install dependencies
         run: flutter pub get
