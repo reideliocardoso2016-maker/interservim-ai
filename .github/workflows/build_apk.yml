@@ -68,24 +68,12 @@ jobs:
         run: |
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
-          # Remove generated test that references non-existent MyApp
           rm -f test/widget_test.dart
-          rm -rf android web
-          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
-          # Remove generated test that references non-existent MyApp
-          rm -f test/widget_test.dart
-          # Debug: show the build.gradle.kts content
-          echo "=== Generated build.gradle.kts content ==="
-          cat android/app/build.gradle.kts
-          echo "=== End ==="
-          # Add coreLibraryDesugaringEnabled to compileOptions
-          awk '/targetCompatibility = JavaVersion.VERSION_11/{print; print "        isCoreLibraryDesugaringEnabled = true"; next}1' android/app/build.gradle.kts > /tmp/build-temp.gradle && mv /tmp/build-temp.gradle android/app/build.gradle.kts
-          # Append desugaring dependency
-          echo "" >> android/app/build.gradle.kts
-          echo 'dependencies {' >> android/app/build.gradle.kts
+          sed -i '/targetCompatibility = JavaVersion.VERSION_17/a\        isCoreLibraryDesugaringEnabled = true' android/app/build.gradle.kts
+          echo "dependencies {" >> android/app/build.gradle.kts
           echo '    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")' >> android/app/build.gradle.kts
-          echo '}' >> android/app/build.gradle.kts
-          echo "=== Modified build.gradle.kts content ==="
+          echo "}" >> android/app/build.gradle.kts
+          echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
           echo "=== End ==="
 
@@ -131,24 +119,12 @@ jobs:
         run: |
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
-          # Remove generated test that references non-existent MyApp
           rm -f test/widget_test.dart
-          rm -rf android web
-          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
-          # Remove generated test that references non-existent MyApp
-          rm -f test/widget_test.dart
-          # Debug: show the build.gradle.kts content
-          echo "=== Generated build.gradle.kts content ==="
-          cat android/app/build.gradle.kts
-          echo "=== End ==="
-          # Add coreLibraryDesugaringEnabled to compileOptions
-          awk '/targetCompatibility = JavaVersion.VERSION_11/{print; print "        isCoreLibraryDesugaringEnabled = true"; next}1' android/app/build.gradle.kts > /tmp/build-temp.gradle && mv /tmp/build-temp.gradle android/app/build.gradle.kts
-          # Append desugaring dependency
-          echo "" >> android/app/build.gradle.kts
-          echo 'dependencies {' >> android/app/build.gradle.kts
+          sed -i '/targetCompatibility = JavaVersion.VERSION_17/a\        isCoreLibraryDesugaringEnabled = true' android/app/build.gradle.kts
+          echo "dependencies {" >> android/app/build.gradle.kts
           echo '    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")' >> android/app/build.gradle.kts
-          echo '}' >> android/app/build.gradle.kts
-          echo "=== Modified build.gradle.kts content ==="
+          echo "}" >> android/app/build.gradle.kts
+          echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
           echo "=== End ==="
 
