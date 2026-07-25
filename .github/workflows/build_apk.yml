@@ -66,10 +66,8 @@ jobs:
 
       - name: Regenerate Android platform files
         run: |
-          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web /tmp/flutter_temp
           rm -rf android web
-          cp -r /tmp/flutter_temp/android android
-          cp -r /tmp/flutter_temp/web web 2>/dev/null || true
+          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           # Enable core library desugaring for flutter_local_notifications
           sed -i 's/targetCompatibility = JavaVersion.VERSION_1[18]/&\n        isCoreLibraryDesugaringEnabled = true/' android/app/build.gradle
           grep -q "coreLibraryDesugaring" android/app/build.gradle || printf '\ndependencies {\n    coreLibraryDesugaring '\''com.android.tools:desugar_jdk_libs:2.1.4'\''\n}\n' >> android/app/build.gradle
@@ -114,10 +112,8 @@ jobs:
 
       - name: Regenerate Android platform files
         run: |
-          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web /tmp/flutter_temp
           rm -rf android web
-          cp -r /tmp/flutter_temp/android android
-          cp -r /tmp/flutter_temp/web web 2>/dev/null || true
+          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           # Enable core library desugaring for flutter_local_notifications
           sed -i 's/targetCompatibility = JavaVersion.VERSION_1[18]/&\n        isCoreLibraryDesugaringEnabled = true/' android/app/build.gradle
           grep -q "coreLibraryDesugaring" android/app/build.gradle || printf '\ndependencies {\n    coreLibraryDesugaring '\''com.android.tools:desugar_jdk_libs:2.1.4'\''\n}\n' >> android/app/build.gradle
