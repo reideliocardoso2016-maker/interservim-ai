@@ -71,50 +71,54 @@ jobs:
           # Remove generated test that references non-existent MyApp
           rm -f test/widget_test.dart
           # Overwrite build.gradle.kts with desugaring already included
-          cat > android/app/build.gradle.kts << 'BUILDGRADLE'
-plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("dev.flutter.flutter-gradle-plugin")
-}
-
-android {
-    namespace = "com.interservim.interservim_ai_sales_agent"
-    compileSdk = flutter.compileSdkVersion
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+          python3 << 'PYEOF'
+import textwrap, pathlib
+content = textwrap.dedent("""\
+    plugins {
+        id("com.android.application")
+        id("kotlin-android")
+        id("dev.flutter.flutter-gradle-plugin")
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
-    }
+    android {
+        namespace = "com.interservim.interservim_ai_sales_agent"
+        compileSdk = flutter.compileSdkVersion
 
-    defaultConfig {
-        applicationId = "com.interservim.interservim_ai_sales_agent"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutterVersionCode.toInteger()
-        versionName = flutterVersionName
-    }
+        compileOptions {
+            isCoreLibraryDesugaringEnabled = true
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
+        }
 
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.debug
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_11
+        }
+
+        defaultConfig {
+            applicationId = "com.interservim.interservim_ai_sales_agent"
+            minSdk = flutter.minSdkVersion
+            targetSdk = flutter.targetSdkVersion
+            versionCode = flutterVersionCode.toInteger()
+            versionName = flutterVersionName
+        }
+
+        buildTypes {
+            release {
+                signingConfig = signingConfigs.debug
+            }
         }
     }
-}
 
-flutter {
-    source = ".."
-}
+    flutter {
+        source = ".."
+    }
 
-dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-}
-BUILDGRADLE
+    dependencies {
+        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    }
+""")
+pathlib.Path('android/app/build.gradle.kts').write_text(content)
+PYEOF
 
       - name: Install dependencies
         run: flutter pub get
@@ -161,50 +165,54 @@ BUILDGRADLE
           # Remove generated test that references non-existent MyApp
           rm -f test/widget_test.dart
           # Overwrite build.gradle.kts with desugaring already included
-          cat > android/app/build.gradle.kts << 'BUILDGRADLE'
-plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("dev.flutter.flutter-gradle-plugin")
-}
-
-android {
-    namespace = "com.interservim.interservim_ai_sales_agent"
-    compileSdk = flutter.compileSdkVersion
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+          python3 << 'PYEOF'
+import textwrap, pathlib
+content = textwrap.dedent("""\
+    plugins {
+        id("com.android.application")
+        id("kotlin-android")
+        id("dev.flutter.flutter-gradle-plugin")
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
-    }
+    android {
+        namespace = "com.interservim.interservim_ai_sales_agent"
+        compileSdk = flutter.compileSdkVersion
 
-    defaultConfig {
-        applicationId = "com.interservim.interservim_ai_sales_agent"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutterVersionCode.toInteger()
-        versionName = flutterVersionName
-    }
+        compileOptions {
+            isCoreLibraryDesugaringEnabled = true
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
+        }
 
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.debug
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_11
+        }
+
+        defaultConfig {
+            applicationId = "com.interservim.interservim_ai_sales_agent"
+            minSdk = flutter.minSdkVersion
+            targetSdk = flutter.targetSdkVersion
+            versionCode = flutterVersionCode.toInteger()
+            versionName = flutterVersionName
+        }
+
+        buildTypes {
+            release {
+                signingConfig = signingConfigs.debug
+            }
         }
     }
-}
 
-flutter {
-    source = ".."
-}
+    flutter {
+        source = ".."
+    }
 
-dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-}
-BUILDGRADLE
+    dependencies {
+        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    }
+""")
+pathlib.Path('android/app/build.gradle.kts').write_text(content)
+PYEOF
 
       - name: Install dependencies
         run: flutter pub get
