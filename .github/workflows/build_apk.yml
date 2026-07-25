@@ -68,6 +68,8 @@ jobs:
         run: |
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
+          # Remove generated test that references non-existent MyApp
+          rm -f test/widget_test.dart
           # Enable core library desugaring for flutter_local_notifications
           sed -i 's/targetCompatibility = JavaVersion.VERSION_1[18]/&\n        isCoreLibraryDesugaringEnabled = true/' android/app/build.gradle.kts
           grep -q "coreLibraryDesugaring" android/app/build.gradle.kts || printf '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n' >> android/app/build.gradle.kts
@@ -114,6 +116,8 @@ jobs:
         run: |
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
+          # Remove generated test that references non-existent MyApp
+          rm -f test/widget_test.dart
           # Enable core library desugaring for flutter_local_notifications
           sed -i 's/targetCompatibility = JavaVersion.VERSION_1[18]/&\n        isCoreLibraryDesugaringEnabled = true/' android/app/build.gradle.kts
           grep -q "coreLibraryDesugaring" android/app/build.gradle.kts || printf '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n' >> android/app/build.gradle.kts
