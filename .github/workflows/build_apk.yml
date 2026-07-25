@@ -70,55 +70,14 @@ jobs:
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           # Remove generated test that references non-existent MyApp
           rm -f test/widget_test.dart
-          # Overwrite build.gradle.kts with desugaring already included
-          python3 << 'PYEOF'
-import textwrap, pathlib
-content = textwrap.dedent("""\
-    plugins {
-        id("com.android.application")
-        id("kotlin-android")
-        id("dev.flutter.flutter-gradle-plugin")
-    }
-
-    android {
-        namespace = "com.interservim.interservim_ai_sales_agent"
-        compileSdk = flutter.compileSdkVersion
-
-        compileOptions {
-            isCoreLibraryDesugaringEnabled = true
-            sourceCompatibility = JavaVersion.VERSION_11
-            targetCompatibility = JavaVersion.VERSION_11
-        }
-
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_11
-        }
-
-        defaultConfig {
-            applicationId = "com.interservim.interservim_ai_sales_agent"
-            minSdk = flutter.minSdkVersion
-            targetSdk = flutter.targetSdkVersion
-            versionCode = flutterVersionCode.toInteger()
-            versionName = flutterVersionName
-        }
-
-        buildTypes {
-            release {
-                signingConfig = signingConfigs.debug
-            }
-        }
-    }
-
-    flutter {
-        source = ".."
-    }
-
-    dependencies {
-        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-    }
-""")
-pathlib.Path('android/app/build.gradle.kts').write_text(content)
-PYEOF
+          # Backup then regenerate Android files from flutter create
+          cp android/app/build.gradle.kts /tmp/build-gradle-bak.kts
+          rm -rf android web
+          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
+          # Remove generated test that references non-existent MyApp
+          rm -f test/widget_test.dart
+          # Restore build.gradle.kts with desugaring enabled
+          cp /tmp/build-gradle-bak.kts android/app/build.gradle.kts
 
       - name: Install dependencies
         run: flutter pub get
@@ -164,55 +123,14 @@ PYEOF
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           # Remove generated test that references non-existent MyApp
           rm -f test/widget_test.dart
-          # Overwrite build.gradle.kts with desugaring already included
-          python3 << 'PYEOF'
-import textwrap, pathlib
-content = textwrap.dedent("""\
-    plugins {
-        id("com.android.application")
-        id("kotlin-android")
-        id("dev.flutter.flutter-gradle-plugin")
-    }
-
-    android {
-        namespace = "com.interservim.interservim_ai_sales_agent"
-        compileSdk = flutter.compileSdkVersion
-
-        compileOptions {
-            isCoreLibraryDesugaringEnabled = true
-            sourceCompatibility = JavaVersion.VERSION_11
-            targetCompatibility = JavaVersion.VERSION_11
-        }
-
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_11
-        }
-
-        defaultConfig {
-            applicationId = "com.interservim.interservim_ai_sales_agent"
-            minSdk = flutter.minSdkVersion
-            targetSdk = flutter.targetSdkVersion
-            versionCode = flutterVersionCode.toInteger()
-            versionName = flutterVersionName
-        }
-
-        buildTypes {
-            release {
-                signingConfig = signingConfigs.debug
-            }
-        }
-    }
-
-    flutter {
-        source = ".."
-    }
-
-    dependencies {
-        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-    }
-""")
-pathlib.Path('android/app/build.gradle.kts').write_text(content)
-PYEOF
+          # Backup then regenerate Android files from flutter create
+          cp android/app/build.gradle.kts /tmp/build-gradle-bak.kts
+          rm -rf android web
+          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
+          # Remove generated test that references non-existent MyApp
+          rm -f test/widget_test.dart
+          # Restore build.gradle.kts with desugaring enabled
+          cp /tmp/build-gradle-bak.kts android/app/build.gradle.kts
 
       - name: Install dependencies
         run: flutter pub get
