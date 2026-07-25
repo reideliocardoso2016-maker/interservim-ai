@@ -71,11 +71,18 @@ jobs:
           # Remove generated test that references non-existent MyApp
           rm -f test/widget_test.dart
           # Enable core library desugaring for flutter_local_notifications
-          sed -i '/targetCompatibility = JavaVersion.VERSION_11/a\        isCoreLibraryDesugaringEnabled = true' android/app/build.gradle.kts
-          echo "" >> android/app/build.gradle.kts
-          echo 'dependencies {' >> android/app/build.gradle.kts
-          echo '    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")' >> android/app/build.gradle.kts
-          echo '}' >> android/app/build.gradle.kts
+          python3 -c "
+import re
+with open('android/app/build.gradle.kts', 'r') as f:
+    content = f.read()
+content = content.replace(
+    'targetCompatibility = JavaVersion.VERSION_11',
+    'targetCompatibility = JavaVersion.VERSION_11\n        isCoreLibraryDesugaringEnabled = true'
+)
+content += '\ndependencies {\n    coreLibraryDesugaring(\"com.android.tools:desugar_jdk_libs:2.1.4\")\n}\n'
+with open('android/app/build.gradle.kts', 'w') as f:
+    f.write(content)
+"
 
       - name: Install dependencies
         run: flutter pub get
@@ -122,11 +129,18 @@ jobs:
           # Remove generated test that references non-existent MyApp
           rm -f test/widget_test.dart
           # Enable core library desugaring for flutter_local_notifications
-          sed -i '/targetCompatibility = JavaVersion.VERSION_11/a\        isCoreLibraryDesugaringEnabled = true' android/app/build.gradle.kts
-          echo "" >> android/app/build.gradle.kts
-          echo 'dependencies {' >> android/app/build.gradle.kts
-          echo '    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")' >> android/app/build.gradle.kts
-          echo '}' >> android/app/build.gradle.kts
+          python3 -c "
+import re
+with open('android/app/build.gradle.kts', 'r') as f:
+    content = f.read()
+content = content.replace(
+    'targetCompatibility = JavaVersion.VERSION_11',
+    'targetCompatibility = JavaVersion.VERSION_11\n        isCoreLibraryDesugaringEnabled = true'
+)
+content += '\ndependencies {\n    coreLibraryDesugaring(\"com.android.tools:desugar_jdk_libs:2.1.4\")\n}\n'
+with open('android/app/build.gradle.kts', 'w') as f:
+    f.write(content)
+"
 
       - name: Install dependencies
         run: flutter pub get
