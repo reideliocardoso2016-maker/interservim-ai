@@ -76,14 +76,15 @@ jobs:
           flutter pub get
           flutter analyze --no-fatal-infos --no-fatal-warnings
           set +e
-          flutter build apk --release 2>&1 | tee build_output.txt
+          flutter build apk --release --split-per-abi 2>&1 | tee build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
+          mkdir -p build/app/outputs/flutter-apk
+          find . -name "*.apk" -exec cp {} build/app/outputs/flutter-apk/ \; 2>/dev/null
+          ls -la build/app/outputs/flutter-apk/ > /dev/stderr
           set -e
           if [ $BUILD_EXIT -ne 0 ]; then
             echo "::error title=Build APK::$(grep -A5 -m1 -E 'FAILURE:|What went wrong:' build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 500)"
           fi
-          APK_PATH=$(find . -name "*.apk" 2>/dev/null | head -5)
-          echo "::warning title=APK location::$APK_PATH"
           exit $BUILD_EXIT
 
       - name: Upload build output
@@ -99,10 +100,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: interservim-ai-release-apk
-          path: |
-            ${{ github.workspace }}/apps/mobile/flutter_app/build/app/outputs/flutter-apk/app-release.apk
-            ${{ github.workspace }}/build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/
           retention-days: 30
           if-no-files-found: warn
 
