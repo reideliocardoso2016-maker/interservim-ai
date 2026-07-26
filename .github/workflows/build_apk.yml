@@ -70,8 +70,12 @@ jobs:
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
           cp $GITHUB_WORKSPACE/scripts/build_template.gradle.kts android/app/build.gradle.kts
+          echo "android.newDsl=false" >> android/gradle.properties
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
+          echo "=== End ==="
+          echo "=== gradle.properties ==="
+          cat android/gradle.properties
           echo "=== End ==="
           flutter pub get
           flutter analyze --no-fatal-infos --no-fatal-warnings
@@ -146,8 +150,12 @@ jobs:
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
           cp $GITHUB_WORKSPACE/scripts/build_template.gradle.kts android/app/build.gradle.kts
+          echo "android.newDsl=false" >> android/gradle.properties
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
+          echo "=== End ==="
+          echo "=== gradle.properties ==="
+          cat android/gradle.properties
           echo "=== End ==="
           flutter pub get
           flutter build appbundle --release 2>&1 | tee build_output.txt
