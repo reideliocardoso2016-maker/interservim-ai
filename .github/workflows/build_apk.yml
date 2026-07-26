@@ -81,9 +81,27 @@ jobs:
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Build APK
-        run: flutter build apk --release
+        run: |
+          set +e
+          flutter build apk --release > build_output.txt 2>&1
+          BUILD_EXIT=$?
+          cat build_output.txt
+          echo "##[set-output name=build_exit]$BUILD_EXIT"
+          if [ $BUILD_EXIT -ne 0 ]; then
+            echo "Build failed with exit code $BUILD_EXIT"
+          fi
+          exit $BUILD_EXIT
+
+      - name: Upload build output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-apk
+          path: apps/mobile/flutter_app/build_output.txt
+          retention-days: 7
 
       - name: Upload APK artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: interservim-ai-release-apk
@@ -126,9 +144,26 @@ jobs:
         run: flutter pub get
 
       - name: Build App Bundle
-        run: flutter build appbundle --release
+        run: |
+          set +e
+          flutter build appbundle --release > build_output.txt 2>&1
+          BUILD_EXIT=$?
+          cat build_output.txt
+          if [ $BUILD_EXIT -ne 0 ]; then
+            echo "Build failed with exit code $BUILD_EXIT"
+          fi
+          exit $BUILD_EXIT
+
+      - name: Upload build output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-aab
+          path: apps/mobile/flutter_app/build_output.txt
+          retention-days: 7
 
       - name: Upload App Bundle artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: interservim-ai-release-aab
