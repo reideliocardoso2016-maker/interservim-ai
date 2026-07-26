@@ -83,7 +83,8 @@ jobs:
           ls -la build/app/outputs/flutter-apk/ > /dev/stderr
           set -e
           if [ $BUILD_EXIT -ne 0 ]; then
-            echo "::error title=Build APK::$(grep -A5 -m1 -E 'FAILURE:|What went wrong:' build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 500)"
+            ERROR_LINES=$(grep -A10 -m1 -E 'FAILURE:|What went wrong:|Execution failed' build_output.txt 2>/dev/null | tr '\n' ' '| head -c 1000)
+            echo "::error title=Build APK::$ERROR_LINES"
           fi
           exit $BUILD_EXIT
 
@@ -100,7 +101,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: interservim-ai-release-apk
-          path: build/app/outputs/flutter-apk/
+          path: |
+            build/app/outputs/flutter-apk/**/*.apk
+            build/app/outputs/flutter-apk/*.apk
+            build/**/*.apk
           retention-days: 30
           if-no-files-found: warn
 
