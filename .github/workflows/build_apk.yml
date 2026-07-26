@@ -64,36 +64,23 @@ jobs:
           channel: "stable"
           cache: true
 
-      - name: Add desugaring to build.gradle.kts
-        run: |
-          python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
-          echo "=== build.gradle.kts content ==="
-          cat android/app/build.gradle.kts
-          echo "=== End ==="
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Run Flutter analyze
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
-
       - name: Build APK
         run: |
+          rm -rf android web
+          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
+          rm -f test/widget_test.dart
+          python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
+          flutter pub get
+          flutter analyze --no-fatal-infos --no-fatal-warnings
           set +e
-          set -o pipefail
           flutter build apk --release 2>&1 | tee build_output.txt
-          BUILD_EXIT=$?
+          BUILD_EXIT=${PIPESTATUS[0]}
+          set -e
           if [ $BUILD_EXIT -ne 0 ]; then
-            ERROR_MSG=$(grep -A5 -m1 -E "FAILURE:|What went wrong:|line:" build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 600)
-            if [ -z "$ERROR_MSG" ]; then
-              ERROR_MSG=$(grep -m1 -E "error:" build_output.txt 2>/dev/null | head -c 200)
-            fi
-            if [ -z "$ERROR_MSG" ]; then
-              ERROR_MSG="Unknown build error"
-            fi
-            echo "::error title=Build APK::$ERROR_MSG"
-            echo "--- Last 100 lines of build output ---"
+            echo "::group::Build error details"
             tail -100 build_output.txt
+            echo "::endgroup::"
+            echo "::error title=Build APK::$(grep -A5 -m1 -E 'FAILURE:|What went wrong:' build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 500)"
           fi
           exit $BUILD_EXIT
 
@@ -147,21 +134,20 @@ jobs:
 
       - name: Build App Bundle
         run: |
+          rm -rf android web
+          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
+          rm -f test/widget_test.dart
+          python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
+          flutter pub get
           set +e
-          set -o pipefail
           flutter build appbundle --release 2>&1 | tee build_output.txt
-          BUILD_EXIT=$?
+          BUILD_EXIT=${PIPESTATUS[0]}
+          set -e
           if [ $BUILD_EXIT -ne 0 ]; then
-            ERROR_MSG=$(grep -A5 -m1 -E "FAILURE:|What went wrong:|line:" build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 600)
-            if [ -z "$ERROR_MSG" ]; then
-              ERROR_MSG=$(grep -m1 -E "error:" build_output.txt 2>/dev/null | head -c 200)
-            fi
-            if [ -z "$ERROR_MSG" ]; then
-              ERROR_MSG="Unknown build error"
-            fi
-            echo "::error title=Build App Bundle::$ERROR_MSG"
-            echo "--- Last 100 lines of build output ---"
+            echo "::group::Build error details"
             tail -100 build_output.txt
+            echo "::endgroup::"
+            echo "::error title=Build App Bundle::$(grep -A5 -m1 -E 'FAILURE:|What went wrong:' build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 500)"
           fi
           exit $BUILD_EXIT
 
