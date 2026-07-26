@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 plugins {
     id("com.android.application")
     id("dev.flutter.flutter-gradle-plugin")
@@ -5,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.interservim.interservim_ai_sales_agent"
-    compileSdk = 34
+    compileSdk = 36
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -16,7 +18,7 @@ android {
     defaultConfig {
         applicationId = "com.interservim.interservim_ai_sales_agent"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -25,16 +27,6 @@ android {
         release {
             signingConfig = signingConfigs.getByName("debug")
         }
-    }
-
-    aarMetadata {
-        minCompileSdk = 34
-    }
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 
