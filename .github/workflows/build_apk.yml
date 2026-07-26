@@ -82,15 +82,15 @@ jobs:
 
       - name: Build APK
         run: |
+          set +e
           set -o pipefail
           flutter build apk --release 2>&1 | tee build_output.txt
           BUILD_EXIT=$?
           if [ $BUILD_EXIT -ne 0 ]; then
             echo "::group::Build error details"
-            grep -i -E "(error|Error|FAILED|Exception|requires|desugar)" build_output.txt | head -30
-            echo "::endgroup::"
             tail -50 build_output.txt
-            echo "::error::Build APK failed - see build output above"
+            echo "::endgroup::"
+            echo "::error::Build APK failed with exit code $BUILD_EXIT"
           fi
           exit $BUILD_EXIT
 
@@ -147,15 +147,15 @@ jobs:
 
       - name: Build App Bundle
         run: |
+          set +e
           set -o pipefail
           flutter build appbundle --release 2>&1 | tee build_output.txt
           BUILD_EXIT=$?
           if [ $BUILD_EXIT -ne 0 ]; then
             echo "::group::Build error details"
-            grep -i -E "(error|Error|FAILED|Exception|requires|desugar)" build_output.txt | head -30
-            echo "::endgroup::"
             tail -50 build_output.txt
-            echo "::error::Build App Bundle failed - see build output above"
+            echo "::endgroup::"
+            echo "::error::Build App Bundle failed with exit code $BUILD_EXIT"
           fi
           exit $BUILD_EXIT
 
