@@ -69,21 +69,7 @@ jobs:
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
-          python3 -c "
-import re
-with open('android/app/build.gradle.kts', 'r') as f:
-    content = f.read()
-# Add isCoreLibraryDesugaringEnabled after targetCompatibility
-content = content.replace(
-    'targetCompatibility = JavaVersion.VERSION_17',
-    'targetCompatibility = JavaVersion.VERSION_17\n        isCoreLibraryDesugaringEnabled = true'
-)
-# Append desugaring dependency if not present
-if 'coreLibraryDesugaring' not in content:
-    content += '\ndependencies {\n    coreLibraryDesugaring(\"com.android.tools:desugar_jdk_libs:2.1.4\")\n}\n'
-with open('android/app/build.gradle.kts', 'w') as f:
-    f.write(content)
-"
+          python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
           echo "=== End ==="
@@ -131,21 +117,7 @@ with open('android/app/build.gradle.kts', 'w') as f:
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
-          python3 -c "
-import re
-with open('android/app/build.gradle.kts', 'r') as f:
-    content = f.read()
-# Add isCoreLibraryDesugaringEnabled after targetCompatibility
-content = content.replace(
-    'targetCompatibility = JavaVersion.VERSION_17',
-    'targetCompatibility = JavaVersion.VERSION_17\n        isCoreLibraryDesugaringEnabled = true'
-)
-# Append desugaring dependency if not present
-if 'coreLibraryDesugaring' not in content:
-    content += '\ndependencies {\n    coreLibraryDesugaring(\"com.android.tools:desugar_jdk_libs:2.1.4\")\n}\n'
-with open('android/app/build.gradle.kts', 'w') as f:
-    f.write(content)
-"
+          python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
           echo "=== End ==="
