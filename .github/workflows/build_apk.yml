@@ -77,22 +77,13 @@ jobs:
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
           cp $GITHUB_WORKSPACE/scripts/build_template.gradle.kts android/app/build.gradle.kts
-          # Create Gradle init script to disable AAR metadata check for all projects
-          cat > android/init.gradle.kts << 'EOSCRIPT'
-allprojects {
-    tasks.configureEach {
-        if (name.contains("checkAarMetadata", ignoreCase = true)) {
-            enabled = false
-        }
-    }
-}
-EOSCRIPT
+          cp $GITHUB_WORKSPACE/scripts/init.gradle.kts android/init.gradle.kts
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
           echo "=== End ==="
           flutter pub get
           set +e
-          flutter build apk --release -- --init-script init.gradle.kts -Pandroid.disableAarMetadataCheck=true 2>&1 | tee build_output.txt
+          flutter build apk --release -- --init-script init.gradle.kts 2>&1 | tee build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
           set -e
           if [ $BUILD_EXIT -ne 0 ]; then
@@ -151,16 +142,7 @@ EOSCRIPT
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
           cp $GITHUB_WORKSPACE/scripts/build_template.gradle.kts android/app/build.gradle.kts
-          # Create Gradle init script to disable AAR metadata check for all projects
-          cat > android/init.gradle.kts << 'EOSCRIPT'
-allprojects {
-    tasks.configureEach {
-        if (name.contains("checkAarMetadata", ignoreCase = true)) {
-            enabled = false
-        }
-    }
-}
-EOSCRIPT
+          cp $GITHUB_WORKSPACE/scripts/init.gradle.kts android/init.gradle.kts
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
           echo "=== End ==="
@@ -168,7 +150,7 @@ EOSCRIPT
 
       - name: Build App Bundle
         run: |
-          flutter build appbundle --release -- --init-script init.gradle.kts -Pandroid.disableAarMetadataCheck=true 2>&1 | tee build_output.txt
+          flutter build appbundle --release -- --init-script init.gradle.kts 2>&1 | tee build_output.txt
           set +e
           BUILD_EXIT=${PIPESTATUS[0]}
           set -e
