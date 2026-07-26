@@ -64,13 +64,18 @@ jobs:
           channel: "stable"
           cache: true
 
+      - name: Install Android SDK 36
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" 2>&1 || \
+          yes | $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-36" 2>&1 || \
+          echo "SDK 36 already installed or sdkmanager not found, continuing"
+          flutter doctor -v
+
       - name: Build APK
         run: |
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
-          echo "android.disableAarMetadataCheck=true" >> android/gradle.properties
-          echo -e "\nsubprojects {\n    tasks.configureEach {\n        if (name.contains(\"checkAarMetadata\")) {\n            enabled = false\n        }\n    }\n}" >> android/build.gradle
           python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
@@ -125,13 +130,17 @@ jobs:
           channel: "stable"
           cache: true
 
+      - name: Install Android SDK 36
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" 2>&1 || \
+          yes | $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-36" 2>&1 || \
+          echo "SDK 36 already installed or sdkmanager not found, continuing"
+
       - name: Generate Android project
         run: |
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
-          echo "android.disableAarMetadataCheck=true" >> android/gradle.properties
-          echo -e "\nsubprojects {\n    tasks.configureEach {\n        if (name.contains(\"checkAarMetadata\")) {\n            enabled = false\n        }\n    }\n}" >> android/build.gradle
           python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
