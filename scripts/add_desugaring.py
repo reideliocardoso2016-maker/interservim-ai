@@ -9,6 +9,12 @@ with open(path, 'r') as f:
 if '@file:Suppress' not in content:
     content = '@file:Suppress("DEPRECATION")\n\n' + content
 
+# Override compileSdk to 36 (flutter.compileSdkVersion may be < 36)
+if 'compileSdk = 36' not in content:
+    content = content.replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 36')
+    content = content.replace('compileSdk = 34', 'compileSdk = 36')
+    content = content.replace('compileSdk = 33', 'compileSdk = 36')
+
 # Add isCoreLibraryDesugaringEnabled if not present
 if 'isCoreLibraryDesugaringEnabled' not in content:
     content = content.replace(
@@ -23,12 +29,6 @@ if 'isCoreLibraryDesugaringEnabled' not in content:
 # Append desugaring dependency if not present
 if 'coreLibraryDesugaring' not in content:
     content += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
-
-# flutter_plugin_android_lifecycle requires compileSdk 36
-if 'compileSdk = flutter.compileSdkVersion' not in content:
-    content = content.replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 36')
-    content = content.replace('compileSdk = 34', 'compileSdk = 36')
-    content = content.replace('compileSdk = 33', 'compileSdk = 36')
 
 # Ensure minSdk uses flutter.minSdkVersion
 content = content.replace('minSdk = 23', 'minSdk = flutter.minSdkVersion')
