@@ -69,26 +69,18 @@ jobs:
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
-          cp $GITHUB_WORKSPACE/scripts/build_template.gradle.kts android/app/build.gradle.kts
-          echo "android.newDsl=false" >> android/gradle.properties
+          python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
-          echo "=== End ==="
-          echo "=== gradle.properties ==="
-          cat android/gradle.properties
           echo "=== End ==="
           flutter pub get
           flutter analyze --no-fatal-infos --no-fatal-warnings
           set +e
-          flutter build apk --release --split-per-abi 2>&1 | tee build_output.txt
+          flutter build apk --release 2>&1 | tee build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
-          mkdir -p build/app/outputs/flutter-apk
-          find . -name "*.apk" -exec cp {} build/app/outputs/flutter-apk/ \; 2>/dev/null
-          ls -la build/app/outputs/flutter-apk/ > /dev/stderr
           set -e
           if [ $BUILD_EXIT -ne 0 ]; then
-            ERROR_LINES=$(grep -A10 -m1 -E 'FAILURE:|What went wrong:|Execution failed' build_output.txt 2>/dev/null | tr '\n' ' '| head -c 1000)
-            echo "::error title=Build APK::$ERROR_LINES"
+            echo "::error title=Build APK::$(grep -A10 -m1 -E 'FAILURE:|What went wrong:|Execution failed' build_output.txt 2>/dev/null | tr '\n' ' '| head -c 1000)"
           fi
           exit $BUILD_EXIT
 
@@ -101,16 +93,13 @@ jobs:
           retention-days: 7
 
       - name: Upload APK artifact
-        if: always()
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: interservim-ai-release-apk
-          path: |
-            build/app/outputs/flutter-apk/**/*.apk
-            build/app/outputs/flutter-apk/*.apk
-            build/**/*.apk
+          path: build/app/outputs/flutter-apk/*.apk
           retention-days: 30
-          if-no-files-found: warn
+          if-no-files-found: error
 
   build-appbundle:
     name: Build Android App Bundle
@@ -149,13 +138,9 @@ jobs:
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
-          cp $GITHUB_WORKSPACE/scripts/build_template.gradle.kts android/app/build.gradle.kts
-          echo "android.newDsl=false" >> android/gradle.properties
+          python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
-          echo "=== End ==="
-          echo "=== gradle.properties ==="
-          cat android/gradle.properties
           echo "=== End ==="
           flutter pub get
           flutter build appbundle --release 2>&1 | tee build_output.txt

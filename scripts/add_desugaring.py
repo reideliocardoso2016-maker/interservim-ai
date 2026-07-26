@@ -5,6 +5,10 @@ path = sys.argv[1] if len(sys.argv) > 1 else 'android/app/build.gradle.kts'
 with open(path, 'r') as f:
     content = f.read()
 
+# Add AGP 9 deprecation suppression at the top
+if '@file:Suppress' not in content:
+    content = '@file:Suppress("DEPRECATION")\n\n' + content
+
 # Add isCoreLibraryDesugaringEnabled if not present
 if 'isCoreLibraryDesugaringEnabled' not in content:
     content = content.replace(
@@ -20,7 +24,7 @@ if 'isCoreLibraryDesugaringEnabled' not in content:
 if 'coreLibraryDesugaring' not in content:
     content += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
 
-# Fix AAR metadata check for AGP 9+ compatibility (file_picker, flutter_local_notifications, etc.)
+# Fix AAR metadata check for AGP 9+ compatibility
 if 'aarMetadata' not in content:
     content = content.replace(
         '    }\n}\n\nkotlin {',
