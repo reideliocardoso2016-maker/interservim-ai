@@ -75,29 +75,16 @@ jobs:
           echo "=== End ==="
           flutter pub get
           flutter analyze --no-fatal-infos --no-fatal-warnings
-          flutter build apk --release 2>&1 | tee build_output.txt
           set +e
+          flutter build apk --release 2>&1 | tee build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
           set -e
           if [ $BUILD_EXIT -ne 0 ]; then
-            echo "::group::Build error details"
-            tail -100 build_output.txt
-            echo "::endgroup::"
             echo "::error title=Build APK::$(grep -A5 -m1 -E 'FAILURE:|What went wrong:' build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 500)"
           fi
+          APK_PATH=$(find . -name "*.apk" 2>/dev/null | head -5)
+          echo "::warning title=APK location::$APK_PATH"
           exit $BUILD_EXIT
-
-      - name: List build output
-        if: always()
-        run: |
-          echo "=== Full build tree ==="
-          find build -type f 2>/dev/null | head -50
-          echo "=== APK specific ==="
-          find build -name "*.apk" 2>/dev/null
-          echo "=== AAB specific ==="
-          find build -name "*.aab" 2>/dev/null
-          echo "=== Build output file ==="
-          cat build_output.txt | tail -30
 
       - name: Upload build output
         if: always()
