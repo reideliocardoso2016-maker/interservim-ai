@@ -84,13 +84,13 @@ jobs:
           flutter build apk --release 2>&1 | tee build_output.txt
           BUILD_EXIT=$?
           if [ $BUILD_EXIT -ne 0 ]; then
-            ERROR_MSG=$(grep -m1 -iE "(error|FAILED|Exception|requires|desugar|watching)" build_output.txt 2>/dev/null | head -c 300)
+            ERROR_MSG=$(grep -A2 -m1 -iE "(FAILURE:|What went wrong:|error:|Exception)" build_output.txt 2>/dev/null | head -c 500)
             if [ -z "$ERROR_MSG" ]; then
               ERROR_MSG="Unknown build error"
             fi
             echo "::error title=Build APK::$ERROR_MSG"
-            echo "--- Last 80 lines of build output ---"
-            tail -80 build_output.txt
+            echo "--- Last 100 lines of build output ---"
+            tail -100 build_output.txt
           fi
           exit $BUILD_EXIT
 
@@ -149,13 +149,13 @@ jobs:
           flutter build appbundle --release 2>&1 | tee build_output.txt
           BUILD_EXIT=$?
           if [ $BUILD_EXIT -ne 0 ]; then
-            ERROR_MSG=$(grep -m1 -iE "(error|FAILED|Exception|requires|desugar)" build_output.txt 2>/dev/null | head -c 300)
+            ERROR_MSG=$(grep -A2 -m1 -iE "(FAILURE:|What went wrong:|error:|Exception)" build_output.txt 2>/dev/null | head -c 500)
             if [ -z "$ERROR_MSG" ]; then
               ERROR_MSG="Unknown build error"
             fi
             echo "::error title=Build App Bundle::$ERROR_MSG"
-            echo "--- Last 80 lines of build output ---"
-            tail -80 build_output.txt
+            echo "--- Last 100 lines of build output ---"
+            tail -100 build_output.txt
           fi
           exit $BUILD_EXIT
 
