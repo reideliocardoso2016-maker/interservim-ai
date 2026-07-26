@@ -24,9 +24,20 @@ if 'isCoreLibraryDesugaringEnabled' not in content:
 if 'coreLibraryDesugaring' not in content:
     content += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
 
-# Disable AAR metadata check for AGP 9+ (file_picker etc.)
-if 'checkReleaseAarMetadata' not in content:
-    content += '\ntasks.matching { it.name.contains("checkReleaseAarMetadata") || it.name.contains("checkDebugAarMetadata") }.configureEach {\n    enabled = false\n}\n'
+# flutter_plugin_android_lifecycle requires compileSdk 36
+if 'compileSdk = flutter.compileSdkVersion' not in content:
+    content = content.replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 36')
+    content = content.replace('compileSdk = 34', 'compileSdk = 36')
+    content = content.replace('compileSdk = 33', 'compileSdk = 36')
+
+# Ensure minSdk uses flutter.minSdkVersion
+content = content.replace('minSdk = 23', 'minSdk = flutter.minSdkVersion')
+content = content.replace('minSdk = 21', 'minSdk = flutter.minSdkVersion')
+
+# Ensure targetSdk uses flutter.targetSdkVersion
+content = content.replace('targetSdk = 34', 'targetSdk = flutter.targetSdkVersion')
+content = content.replace('targetSdk = 33', 'targetSdk = flutter.targetSdkVersion')
+content = content.replace('targetSdk = flutter.compileSdkVersion', 'targetSdk = flutter.targetSdkVersion')
 
 with open(path, 'w') as f:
     f.write(content)

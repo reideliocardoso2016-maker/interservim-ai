@@ -69,6 +69,7 @@ jobs:
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
+          echo "android.disableAarMetadataCheck=true" >> android/gradle.properties
           python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
@@ -123,26 +124,20 @@ jobs:
           channel: "stable"
           cache: true
 
-      - name: Add desugaring to build.gradle.kts
-        run: |
-          python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
-          echo "=== build.gradle.kts content ==="
-          cat android/app/build.gradle.kts
-          echo "=== End ==="
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build App Bundle
+      - name: Generate Android project
         run: |
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
+          echo "android.disableAarMetadataCheck=true" >> android/gradle.properties
           python3 $GITHUB_WORKSPACE/scripts/add_desugaring.py android/app/build.gradle.kts
           echo "=== build.gradle.kts content ==="
           cat android/app/build.gradle.kts
           echo "=== End ==="
           flutter pub get
+
+      - name: Build App Bundle
+        run: |
           flutter build appbundle --release 2>&1 | tee build_output.txt
           set +e
           BUILD_EXIT=${PIPESTATUS[0]}
