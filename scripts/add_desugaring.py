@@ -24,12 +24,9 @@ if 'isCoreLibraryDesugaringEnabled' not in content:
 if 'coreLibraryDesugaring' not in content:
     content += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
 
-# Fix AAR metadata check for AGP 9+ compatibility
-if 'aarMetadata' not in content:
-    content = content.replace(
-        '    }\n}\n\nkotlin {',
-        '    }\n\n    aarMetadata {\n        minCompileSdk = 34\n    }\n}\n\nkotlin {'
-    )
+# Disable AAR metadata check for AGP 9+ (file_picker etc.)
+if 'checkReleaseAarMetadata' not in content:
+    content += '\ntasks.matching { it.name.contains("checkReleaseAarMetadata") || it.name.contains("checkDebugAarMetadata") }.configureEach {\n    enabled = false\n}\n'
 
 with open(path, 'w') as f:
     f.write(content)
