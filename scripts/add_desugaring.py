@@ -20,6 +20,13 @@ if 'isCoreLibraryDesugaringEnabled' not in content:
 if 'coreLibraryDesugaring' not in content:
     content += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
 
+# Fix AAR metadata check for AGP 9+ compatibility (file_picker, flutter_local_notifications, etc.)
+if 'aarMetadata' not in content:
+    content = content.replace(
+        '    }\n}\n\nkotlin {',
+        '    }\n\n    aarMetadata {\n        minCompileSdk = 34\n    }\n}\n\nkotlin {'
+    )
+
 with open(path, 'w') as f:
     f.write(content)
 
