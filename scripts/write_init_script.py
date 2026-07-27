@@ -1,18 +1,18 @@
 import sys, os
 
 # Write to ~/.gradle/init.d/ so Gradle loads it automatically
+# Use Groovy DSL (not .kts) to avoid Kotlin type resolution issues
 init_dir = os.path.expanduser('~/.gradle/init.d')
 os.makedirs(init_dir, exist_ok=True)
 
-path = os.path.join(init_dir, 'interservim.gradle.kts')
+path = os.path.join(init_dir, 'interservim.gradle')
 
 content = """gradle.afterProject { project ->
-    val android = project.extensions.findByName("android")
-    if (android is com.android.build.api.dsl.CommonExtension<*, *, *, *>) {
-        android.compileSdk = 36
+    if (project.hasProperty("android")) {
+        project.android.compileSdk = 36
     }
-    project.tasks.matching { it.name.contains("checkAarMetadata") }.configureEach {
-        enabled = false
+    project.tasks.findAll { it.name.contains("checkAarMetadata") }.each {
+        it.enabled = false
     }
 }
 """
