@@ -42,6 +42,8 @@ jobs:
           echo "=== flutter pub get ===" | tee -a build_output.txt
           flutter pub get 2>&1 | tee -a build_output.txt
           echo "PUB_EXIT: ${PIPESTATUS[0]}" | tee -a build_output.txt
+          echo "=== patch jni ==="
+          python3 $GITHUB_WORKSPACE/scripts/patch_jni.py 2>&1 | tee -a build_output.txt
           echo "=== flutter build ===" | tee -a build_output.txt
           flutter build apk --release 2>&1 | tee -a build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
