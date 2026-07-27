@@ -46,11 +46,13 @@ jobs:
           flutter build apk --release 2>&1 | tee -a build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
           echo "BUILD_EXIT: $BUILD_EXIT" | tee -a build_output.txt
-          echo "=== FULL BUILD OUTPUT ==="
+          echo "=== FULL BUILD OUTPUT (all) ==="
           cat build_output.txt
+          echo "=== LAST 2000 BYTES ==="
+          tail -c 2000 build_output.txt
           echo "=== END ==="
           if [ $BUILD_EXIT -ne 0 ]; then
-            echo "::error title=Build Error::$(cat build_output.txt | tail -100 | tr '\n' ' ' | head -c 3000)"
+            echo "::error title=Build Error::$(tail -c 2000 build_output.txt | tr '\n' ' ')"
           fi
           exit $BUILD_EXIT
 
