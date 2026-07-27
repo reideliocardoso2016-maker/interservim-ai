@@ -34,12 +34,10 @@ jobs:
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
           python3 $GITHUB_WORKSPACE/scripts/modify_build.py android/app/build.gradle.kts
-          echo "android.disableAarMetadataCheck=true" >> android/gradle.properties
-          echo "android.newDsl=false" >> android/gradle.properties
           echo "=== modified build.gradle.kts ==="
           cat android/app/build.gradle.kts
-          echo "=== gradle.properties ==="
-          cat android/gradle.properties
+          echo "=== modified settings.gradle.kts ==="
+          cat android/settings.gradle.kts
           echo "=== End ==="
           flutter pub get
           set +e
