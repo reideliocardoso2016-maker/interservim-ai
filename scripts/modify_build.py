@@ -2,7 +2,6 @@ import sys, os
 
 base = sys.argv[1] if len(sys.argv) > 1 else 'android'
 
-# try both build.gradle and build.gradle.kts
 root_path = None
 for fname in ('build.gradle.kts', 'build.gradle'):
     p = os.path.join(base, fname)
@@ -20,9 +19,31 @@ with open(root_path, 'r') as f:
     r = f.read()
 
 marker = '// CI_PATCH_APPLIED'
+is_kts = root_path.endswith('.kts')
 
 if marker not in r:
-    patch = f'''
+    if is_kts:
+        patch = f'''
+// {marker}
+subprojects {{
+    if (name == "jni") {{
+        apply(plugin = "kotlin-android")
+    }}
+}}
+subprojects {{
+    afterEvaluate {{
+        val android = extensions.findByName("android")
+        if (android is com.android.build.api.dsl.CommonExtension<*, *, *, *>) {{
+            android.compileSdk = 36
+        }}
+        tasks.matching {{ it.name.contains("checkAarMetadata") }}.configureEach {{
+            enabled = false
+        }}
+    }}
+}}
+'''
+    else:
+        patch = f'''
 // {marker}
 subprojects {{
     if (name == 'jni') {{

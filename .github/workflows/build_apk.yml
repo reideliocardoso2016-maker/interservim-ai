@@ -38,7 +38,8 @@ jobs:
           echo "CREATE_EXIT: ${PIPESTATUS[0]}" | tee -a build_output.txt
           rm -f test/widget_test.dart
           cp $GITHUB_WORKSPACE/scripts/build_template.gradle.kts android/app/build.gradle.kts
-          python3 $GITHUB_WORKSPACE/scripts/modify_build.py android
+          echo "=== write init script ==="
+          python3 $GITHUB_WORKSPACE/scripts/write_init_script.py 2>&1 | tee -a build_output.txt
           echo "=== flutter pub get ===" | tee -a build_output.txt
           flutter pub get 2>&1 | tee -a build_output.txt
           echo "PUB_EXIT: ${PIPESTATUS[0]}" | tee -a build_output.txt

@@ -1,28 +1,22 @@
 import sys, os
 
-path = os.path.join(sys.argv[1], 'init.gradle.kts') if len(sys.argv) > 1 else 'android/init.gradle.kts'
+# Write to ~/.gradle/init.d/ so Gradle loads it automatically
+init_dir = os.path.expanduser('~/.gradle/init.d')
+os.makedirs(init_dir, exist_ok=True)
 
-content = """gradle.projectsLoaded {
-    allprojects {
-        afterEvaluate {
-            val androidExt = extensions.findByType<com.android.build.api.dsl.CommonExtension<*, *, *, *>>()
-            if (androidExt != null && androidExt.compileSdk < 36) {
-                androidExt.compileSdk = 36
-            }
-        }
+path = os.path.join(init_dir, 'interservim.gradle.kts')
+
+content = """gradle.afterProject { project ->
+    val android = project.extensions.findByName("android")
+    if (android is com.android.build.api.dsl.CommonExtension<*, *, *, *>) {
+        android.compileSdk = 36
     }
-}
-
-gradle.taskGraph.whenReady {
-    allTasks.forEach { task ->
-        if (task.name.contains("checkAarMetadata", ignoreCase = true)) {
-            task.enabled = false
-        }
+    project.tasks.matching { it.name.contains("checkAarMetadata") }.configureEach {
+        enabled = false
     }
 }
 """
 
-os.makedirs(os.path.dirname(path), exist_ok=True)
 with open(path, 'w') as f:
     f.write(content)
 
