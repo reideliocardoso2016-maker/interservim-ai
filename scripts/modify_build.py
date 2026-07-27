@@ -12,16 +12,10 @@ c = c.replace('targetCompatibility = JavaVersion.VERSION_11', 'targetCompatibili
 c = c.replace('targetCompatibility = JavaVersion.VERSION_1_8', 'targetCompatibility = JavaVersion.VERSION_17')
 c = c.replace('targetCompatibility = JavaVersion.VERSION_17', 'targetCompatibility = JavaVersion.VERSION_17\n        isCoreLibraryDesugaringEnabled = true')
 
-c += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
+# Add aarMetadata block to disable AAR check within the android block
+c = c.replace('buildTypes {', 'aarMetadata {\n        enabled = false\n    }\n\n    buildTypes {')
 
-# Disable AAR metadata check for all variants via androidComponents
-c += '''
-androidComponents {
-    onVariants { variant ->
-        variant.checkAarMetadata?.enabled = false
-    }
-}
-'''
+c += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
 
 with open(path, 'w') as f:
     f.write(c)
