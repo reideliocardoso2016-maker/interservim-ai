@@ -33,23 +33,22 @@ jobs:
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
-          python3 $GITHUB_WORKSPACE/scripts/modify_build.py android/app/build.gradle.kts
-          python3 $GITHUB_WORKSPACE/scripts/write_init_script.py android
+          python3 $GITHUB_WORKSPACE/scripts/modify_build.py android
           echo "=== modified build.gradle.kts ==="
           cat android/app/build.gradle.kts
-          echo "=== init.gradle.kts ==="
-          cat android/init.gradle.kts
+          echo "=== modified root build.gradle ==="
+          cat android/build.gradle
           echo "=== End ==="
           flutter pub get
           set +e
-          flutter build apk --release -- --init-script init.gradle.kts 2>&1 | tee build_output.txt
+          flutter build apk --release 2>&1 | tee build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
           set -e
-          echo "=== Last 100 lines of build output ==="
-          tail -100 build_output.txt
-          echo "=== End ==="
+          echo "=== FULL build output ($(wc -c < build_output.txt) bytes) ==="
+          cat build_output.txt
+          echo "=== END build output ==="
           if [ $BUILD_EXIT -ne 0 ]; then
-            echo "::error title=Build Error::$(grep -A10 -m1 -E 'FAILURE:|What went wrong:|Execution failed' build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 2000)"
+            echo "::error title=Build Error::$(cat build_output.txt | tr '\n' ' ' | head -c 3000)"
           fi
           exit $BUILD_EXIT
 
