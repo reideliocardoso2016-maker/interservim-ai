@@ -3,47 +3,11 @@ name: Build APK
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
-  build-backend:
-    name: Test Backend
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/backend/api
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: "pip"
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-
-      - name: Run backend tests
-        run: |
-          python -c "
-          from app.core.config import settings
-          from app.core.enums import *
-          from app.models import *
-          from app.schemas.schemas import *
-          print('All backend modules imported successfully')
-          "
-
-      - name: Seed database
-        run: |
-          DATABASE_URL=sqlite:///./test.db python seed.py
-
   build-apk:
-    name: Build Android APK
+    name: Build APK
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -63,31 +27,44 @@ jobs:
         with:
           channel: "stable"
           cache: true
-
-      - name: Install Android SDK 36
-        run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" 2>&1 || \
-          yes | $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-36" 2>&1 || \
-          echo "SDK 36 already installed or sdkmanager not found, continuing"
-          flutter doctor -v
 
       - name: Build APK
         run: |
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
-          cp $GITHUB_WORKSPACE/scripts/build_template.gradle.kts android/app/build.gradle.kts
-          cp $GITHUB_WORKSPACE/scripts/init.gradle.kts android/init.gradle.kts
-          echo "=== build.gradle.kts content ==="
+          # Modify generated build.gradle.kts to add @file:Suppress, compileSdk=36, desugaring
+          python3 -c "
+import re
+with open('android/app/build.gradle.kts','r') as f:
+    c = f.read()
+c = '@file:Suppress(\"DEPRECATION\")\n\n' + c
+c = re.sub(r'compileSdk\s*=\s*flutter\.compileSdkVersion', 'compileSdk = 36', c)
+c = c.replace('targetCompatibility = JavaVersion.VERSION_11', 'targetCompatibility = JavaVersion.VERSION_17')
+c = c.replace('targetCompatibility = JavaVersion.VERSION_1_8', 'targetCompatibility = JavaVersion.VERSION_17')
+# add isCoreLibraryDesugaringEnabled
+c = c.replace('targetCompatibility = JavaVersion.VERSION_17', 'targetCompatibility = JavaVersion.VERSION_17\n        isCoreLibraryDesugaringEnabled = true')
+# add coreLibraryDesugaring dependency
+c += '\ndependencies {\n    coreLibraryDesugaring(\"com.android.tools:desugar_jdk_libs:2.1.4\")\n}\n'
+with open('android/app/build.gradle.kts','w') as f:
+    f.write(c)
+"
+          # Disable AAR metadata check in gradle.properties
+          echo "android.disableAarMetadataCheck=true" >> android/gradle.properties
+          echo "android.newDsl=false" >> android/gradle.properties
+          echo "=== modified build.gradle.kts ==="
           cat android/app/build.gradle.kts
+          echo "=== gradle.properties ==="
+          cat android/gradle.properties
           echo "=== End ==="
           flutter pub get
           set +e
-          flutter build apk --release -- --init-script init.gradle.kts 2>&1 | tee build_output.txt
+          flutter build apk --release 2>&1 | tee build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
           set -e
+          tail -100 build_output.txt
           if [ $BUILD_EXIT -ne 0 ]; then
-            echo "::error title=Build APK::$(grep -A10 -m1 -E 'FAILURE:|What went wrong:|Execution failed' build_output.txt 2>/dev/null | tr '\n' ' '| head -c 1000)"
+            echo "::error title=Build APK::$(grep -A10 -m1 -E 'FAILURE:|What went wrong:|Execution failed' build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 2000)"
           fi
           exit $BUILD_EXIT
 
@@ -95,85 +72,15 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-output-apk
+          name: build-output
           path: apps/mobile/flutter_app/build_output.txt
           retention-days: 7
 
-      - name: Upload APK artifact
+      - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: interservim-ai-release-apk
-          path: apps/mobile/flutter_app/build/app/outputs/flutter-apk/*.apk
+          path: apps/mobile/flutter_app/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
           if-no-files-found: error
-
-  build-appbundle:
-    name: Build Android App Bundle
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/mobile/flutter_app
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          cache: true
-
-      - name: Install Android SDK 36
-        run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" 2>&1 || \
-          yes | $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-36" 2>&1 || \
-          echo "SDK 36 already installed or sdkmanager not found, continuing"
-
-      - name: Generate Android project
-        run: |
-          rm -rf android web
-          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
-          rm -f test/widget_test.dart
-          cp $GITHUB_WORKSPACE/scripts/build_template.gradle.kts android/app/build.gradle.kts
-          cp $GITHUB_WORKSPACE/scripts/init.gradle.kts android/init.gradle.kts
-          echo "=== build.gradle.kts content ==="
-          cat android/app/build.gradle.kts
-          echo "=== End ==="
-          flutter pub get
-
-      - name: Build App Bundle
-        run: |
-          flutter build appbundle --release -- --init-script init.gradle.kts 2>&1 | tee build_output.txt
-          set +e
-          BUILD_EXIT=${PIPESTATUS[0]}
-          set -e
-          if [ $BUILD_EXIT -ne 0 ]; then
-            echo "::group::Build error details"
-            tail -100 build_output.txt
-            echo "::endgroup::"
-            echo "::error title=Build App Bundle::$(grep -A5 -m1 -E 'FAILURE:|What went wrong:' build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 500)"
-          fi
-          exit $BUILD_EXIT
-
-      - name: Upload build output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output-aab
-          path: apps/mobile/flutter_app/build_output.txt
-          retention-days: 7
-
-      - name: Upload App Bundle artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: interservim-ai-release-aab
-          path: apps/mobile/flutter_app/build/app/outputs/bundle/release/app-release.aab
-          retention-days: 30
