@@ -8,6 +8,11 @@ with open(root_path, 'r') as f:
 
 patch = '''
 subprojects {
+    if (name == 'jni') {
+        apply plugin: 'kotlin-android'
+    }
+}
+subprojects {
     afterEvaluate { project ->
         if (project.hasProperty("android")) {
             project.android.compileSdk = 36
