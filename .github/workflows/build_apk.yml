@@ -33,23 +33,7 @@ jobs:
           rm -rf android web
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
-          # Modify generated build.gradle.kts to add @file:Suppress, compileSdk=36, desugaring
-          python3 -c "
-import re
-with open('android/app/build.gradle.kts','r') as f:
-    c = f.read()
-c = '@file:Suppress(\"DEPRECATION\")\n\n' + c
-c = re.sub(r'compileSdk\s*=\s*flutter\.compileSdkVersion', 'compileSdk = 36', c)
-c = c.replace('targetCompatibility = JavaVersion.VERSION_11', 'targetCompatibility = JavaVersion.VERSION_17')
-c = c.replace('targetCompatibility = JavaVersion.VERSION_1_8', 'targetCompatibility = JavaVersion.VERSION_17')
-# add isCoreLibraryDesugaringEnabled
-c = c.replace('targetCompatibility = JavaVersion.VERSION_17', 'targetCompatibility = JavaVersion.VERSION_17\n        isCoreLibraryDesugaringEnabled = true')
-# add coreLibraryDesugaring dependency
-c += '\ndependencies {\n    coreLibraryDesugaring(\"com.android.tools:desugar_jdk_libs:2.1.4\")\n}\n'
-with open('android/app/build.gradle.kts','w') as f:
-    f.write(c)
-"
-          # Disable AAR metadata check in gradle.properties
+          python3 $GITHUB_WORKSPACE/scripts/modify_build.py android/app/build.gradle.kts
           echo "android.disableAarMetadataCheck=true" >> android/gradle.properties
           echo "android.newDsl=false" >> android/gradle.properties
           echo "=== modified build.gradle.kts ==="
@@ -62,9 +46,11 @@ with open('android/app/build.gradle.kts','w') as f:
           flutter build apk --release 2>&1 | tee build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
           set -e
+          echo "=== Last 100 lines of build output ==="
           tail -100 build_output.txt
+          echo "=== End ==="
           if [ $BUILD_EXIT -ne 0 ]; then
-            echo "::error title=Build APK::$(grep -A10 -m1 -E 'FAILURE:|What went wrong:|Execution failed' build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 2000)"
+            echo "::error title=Build Error::$(grep -A10 -m1 -E 'FAILURE:|What went wrong:|Execution failed' build_output.txt 2>/dev/null | tr '\n' ' ' | head -c 2000)"
           fi
           exit $BUILD_EXIT
 
