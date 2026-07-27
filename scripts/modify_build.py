@@ -28,13 +28,12 @@ patch = '''
 subprojects {
     afterEvaluate { project ->
         if (project.hasProperty("android")) {
-            project.android.compileSdk = 36
+            project.android.setCompileSdk(36)
         }
     }
-}
-
-tasks.matching { it.name.contains("checkAarMetadata") }.configureEach {
-    enabled = false
+    tasks.matching { it.name.contains("checkAarMetadata") }.configureEach {
+        enabled = false
+    }
 }
 '''
 
