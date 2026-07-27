@@ -28,10 +28,6 @@ configure<ApplicationExtension> {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
-
-    aarMetadata {
-        enabled = false
-    }
 }
 
 kotlin {
