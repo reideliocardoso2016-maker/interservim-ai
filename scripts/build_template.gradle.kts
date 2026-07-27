@@ -1,11 +1,11 @@
-@file:Suppress("DEPRECATION")
+import com.android.build.api.dsl.ApplicationExtension
 
 plugins {
     id("com.android.application")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-android {
+configure<ApplicationExtension> {
     namespace = "com.interservim.interservim_ai_sales_agent"
     compileSdk = 36
 
@@ -27,6 +27,10 @@ android {
         release {
             signingConfig = signingConfigs.getByName("debug")
         }
+    }
+
+    aarMetadata {
+        enabled = false
     }
 }
 
