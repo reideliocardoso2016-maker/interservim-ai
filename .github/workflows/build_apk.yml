@@ -34,14 +34,15 @@ jobs:
           flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
           rm -f test/widget_test.dart
           python3 $GITHUB_WORKSPACE/scripts/modify_build.py android/app/build.gradle.kts
+          python3 $GITHUB_WORKSPACE/scripts/write_init_script.py android
           echo "=== modified build.gradle.kts ==="
           cat android/app/build.gradle.kts
-          echo "=== modified settings.gradle.kts ==="
-          cat android/settings.gradle.kts
+          echo "=== init.gradle.kts ==="
+          cat android/init.gradle.kts
           echo "=== End ==="
           flutter pub get
           set +e
-          flutter build apk --release 2>&1 | tee build_output.txt
+          flutter build apk --release -- --init-script init.gradle.kts 2>&1 | tee build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
           set -e
           echo "=== Last 100 lines of build output ==="
