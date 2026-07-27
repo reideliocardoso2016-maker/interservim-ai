@@ -30,25 +30,26 @@ jobs:
 
       - name: Build APK
         run: |
+          set +e
+          touch build_output.txt
           rm -rf android web
-          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web .
+          echo "=== flutter create ===" | tee -a build_output.txt
+          flutter create --project-name interservim_ai_sales_agent --org com.interservim --platforms android,web . 2>&1 | tee -a build_output.txt
+          echo "CREATE_EXIT: ${PIPESTATUS[0]}" | tee -a build_output.txt
           rm -f test/widget_test.dart
           python3 $GITHUB_WORKSPACE/scripts/modify_build.py android
-          echo "=== modified build.gradle.kts ==="
-          cat android/app/build.gradle.kts
-          echo "=== modified root build.gradle ==="
-          cat android/build.gradle
-          echo "=== End ==="
-          flutter pub get
-          set +e
-          flutter build apk --release 2>&1 | tee build_output.txt
+          echo "=== flutter pub get ===" | tee -a build_output.txt
+          flutter pub get 2>&1 | tee -a build_output.txt
+          echo "PUB_EXIT: ${PIPESTATUS[0]}" | tee -a build_output.txt
+          echo "=== flutter build ===" | tee -a build_output.txt
+          flutter build apk --release 2>&1 | tee -a build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
-          set -e
-          echo "=== FULL build output ($(wc -c < build_output.txt) bytes) ==="
+          echo "BUILD_EXIT: $BUILD_EXIT" | tee -a build_output.txt
+          echo "=== FULL BUILD OUTPUT ==="
           cat build_output.txt
-          echo "=== END build output ==="
+          echo "=== END ==="
           if [ $BUILD_EXIT -ne 0 ]; then
-            echo "::error title=Build Error::$(cat build_output.txt | tr '\n' ' ' | head -c 3000)"
+            echo "::error title=Build Error::$(cat build_output.txt | tail -100 | tr '\n' ' ' | head -c 3000)"
           fi
           exit $BUILD_EXIT
 
