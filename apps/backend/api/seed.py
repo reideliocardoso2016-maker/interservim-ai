@@ -26,6 +26,13 @@ def seed():
                 role=UserRole.MANAGER,
             )
             db.add(manager)
+            reidelio = User(
+                name="Reidelio",
+                email="reidelio@interservim.com",
+                password_hash=hash_password("TuTy123"),
+                role=UserRole.ADMIN,
+            )
+            db.add(reidelio)
             db.flush()
         if db.query(ProductCategory).count() == 0:
             grains = ProductCategory(name="Granos", description="Cereales, legumbres y granos básicos")

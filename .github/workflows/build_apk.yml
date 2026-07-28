@@ -46,7 +46,7 @@ jobs:
           echo "=== patch jni ==="
           python3 $GITHUB_WORKSPACE/scripts/patch_jni.py 2>&1 | tee -a build_output.txt
           echo "=== flutter build ===" | tee -a build_output.txt
-          flutter build apk --release 2>&1 | tee -a build_output.txt
+          flutter build apk --release --dart-define=API_BASE_URL=http://192.168.0.126:8000/api/v1 2>&1 | tee -a build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
           echo "BUILD_EXIT: $BUILD_EXIT" | tee -a build_output.txt
           echo "=== FULL BUILD OUTPUT (all) ==="
