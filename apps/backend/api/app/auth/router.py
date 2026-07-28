@@ -69,6 +69,24 @@ def refresh(data: TokenRefresh, db: Session = Depends(get_db)):
     )
 
 
+@router.post("/guest", response_model=TokenResponse)
+def guest_login(db: Session = Depends(get_db)):
+    guest = db.query(User).filter(User.email == "guest@interservim.com").first()
+    if not guest:
+        guest = User(
+            name="Guest",
+            email="guest@interservim.com",
+            password_hash=hash_password("guest"),
+            role=UserRole.ADMIN,
+        )
+        db.add(guest)
+        db.commit()
+        db.refresh(guest)
+    access_token = create_access_token({"sub": str(guest.id), "role": guest.role.value})
+    refresh_token = create_refresh_token({"sub": str(guest.id), "role": guest.role.value})
+    return TokenResponse(access_token=access_token, refresh_token=refresh_token, expires_in=525600)
+
+
 @router.get("/me", response_model=UserResponse)
 def me(current_user: User = Depends(get_current_user)):
     return current_user

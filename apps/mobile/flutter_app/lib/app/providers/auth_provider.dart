@@ -42,43 +42,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final ApiService _api;
   final FlutterSecureStorage _storage;
 
-  AuthNotifier(this._api, this._storage) : super(const AuthState());
-
-  Future<void> checkAuth() async {
-    final token = await _storage.read(key: 'access_token');
-    if (token != null) {
-      try {
-        final response = await _api.get('/auth/me');
-        final user = response.data['data'];
-        state = AuthState(
-          isAuthenticated: true,
-          token: token,
-          userName: user['name'],
-          userRole: user['role'],
-        );
-      } catch (e) {
-        await _storage.deleteAll();
-        state = const AuthState();
-      }
-    }
+  AuthNotifier(this._api, this._storage) : super(const AuthState()) {
+    _api.init();
   }
 
-  Future<void> login(String email, String password) async {
-    state = state.copyWith(isLoading: true, error: null);
+  Future<void> guestLogin() async {
+    state = state.copyWith(isLoading: true);
     try {
-      final response = await _api.post('/auth/login', data: {
-        'email': email,
-        'password': password,
-      });
+      final response = await _api.post('/auth/guest');
       final data = response.data;
       await _storage.write(key: 'access_token', value: data['access_token']);
       await _storage.write(key: 'refresh_token', value: data['refresh_token']);
       state = AuthState(
         isAuthenticated: true,
         token: data['access_token'],
+        userRole: 'ADMIN',
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: 'Credenciales inválidas');
+      state = state.copyWith(isLoading: false, error: 'Error de conexión');
     }
   }
 

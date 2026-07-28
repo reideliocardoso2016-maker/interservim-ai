@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../app/providers/auth_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -17,9 +18,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _init() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await ref.read(authProvider.notifier).guestLogin();
     if (mounted) {
-      context.go('/login');
+      context.go('/dashboard');
     }
   }
 

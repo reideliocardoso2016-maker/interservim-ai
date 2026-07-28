@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: interservim-api
+    runtime: python
+    region: ohio
+    plan: free
+    buildCommand: cd apps/backend/api && pip install -r requirements.txt
+    startCommand: cd apps/backend/api && python seed.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./interservim_ai.db
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.12.4

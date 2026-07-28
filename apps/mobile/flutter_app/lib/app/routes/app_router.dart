@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/auth/screens/login_screen.dart';
+import 'package:flutter/material.dart';
 import '../../features/auth/screens/splash_screen.dart';
 import '../../features/dashboard/screens/dashboard_screen.dart';
 import '../../features/conversations/screens/conversations_screen.dart';
@@ -25,14 +25,11 @@ class AppRouter {
       initialLocation: '/splash',
       redirect: (context, state) {
         final isLoggedIn = authState.isAuthenticated;
-        final isAuthRoute = state.matchedLocation == '/login' || state.matchedLocation == '/splash';
-        if (!isLoggedIn && !isAuthRoute) return '/login';
-        if (isLoggedIn && isAuthRoute) return '/dashboard';
+        if (!isLoggedIn && state.matchedLocation != '/splash') return '/splash';
         return null;
       },
       routes: [
         GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
-        GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
         GoRoute(
           path: '/dashboard',
           builder: (_, __) => const DashboardScreen(),
