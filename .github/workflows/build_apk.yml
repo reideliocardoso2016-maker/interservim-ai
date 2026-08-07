@@ -4,6 +4,11 @@ on:
   push:
     branches: [ main, master ]
   workflow_dispatch:
+    inputs:
+      api_base_url:
+        description: "API base URL baked into the APK"
+        required: false
+        default: "https://bowl-actress-powerseller-duncan.trycloudflare.com/api/v1"
 
 jobs:
   build-apk:
@@ -13,7 +18,7 @@ jobs:
       run:
         working-directory: apps/mobile/flutter_app
     env:
-      API_BASE_URL: ${{ inputs.api_base_url || 'http://192.168.0.126:8000/api/v1' }}
+      API_BASE_URL: ${{ inputs.api_base_url || 'https://bowl-actress-powerseller-duncan.trycloudflare.com/api/v1' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +53,7 @@ jobs:
           echo "=== patch jni ==="
           python3 $GITHUB_WORKSPACE/scripts/patch_jni.py 2>&1 | tee -a build_output.txt
           echo "=== flutter build ===" | tee -a build_output.txt
-          flutter build apk --release --dart-define=API_BASE_URL=http://192.168.0.126:8000/api/v1 2>&1 | tee -a build_output.txt
+          flutter build apk --release --dart-define=API_BASE_URL=$API_BASE_URL 2>&1 | tee -a build_output.txt
           BUILD_EXIT=${PIPESTATUS[0]}
           echo "BUILD_EXIT: $BUILD_EXIT" | tee -a build_output.txt
           echo "=== FULL BUILD OUTPUT (all) ==="
