@@ -8,7 +8,7 @@ on:
       api_base_url:
         description: "API base URL baked into the APK"
         required: false
-        default: "https://bowl-actress-powerseller-duncan.trycloudflare.com/api/v1"
+        default: "https://architect-warren-sequences-reducing.trycloudflare.com/api/v1"
 
 jobs:
   build-apk:
@@ -18,7 +18,7 @@ jobs:
       run:
         working-directory: apps/mobile/flutter_app
     env:
-      API_BASE_URL: ${{ inputs.api_base_url || 'https://bowl-actress-powerseller-duncan.trycloudflare.com/api/v1' }}
+      API_BASE_URL: ${{ inputs.api_base_url || 'https://architect-warren-sequences-reducing.trycloudflare.com/api/v1' }}
 
     steps:
       - uses: actions/checkout@v4
