@@ -4,7 +4,7 @@ services:
     runtime: python
     region: ohio
     plan: free
-    buildCommand: cd apps/backend/api && pip install -r requirements.txt
+    buildCommand: cd apps/backend/api && pip install -r requirements-render.txt
     startCommand: cd apps/backend/api && python seed.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
@@ -13,3 +13,5 @@ services:
         generateValue: true
       - key: PYTHON_VERSION
         value: 3.12.4
+      - key: CORS_ORIGINS
+        value: "*"
